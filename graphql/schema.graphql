@@ -29,8 +29,8 @@ type OrderedProduct {
 }
 
 input PaginationInput {
-    skip: Int!
-    take: Int!
+    skip: Int
+    take: Int
 }
 
 input AccountInput {
@@ -60,6 +60,6 @@ type Mutation {
 }
 
 type Query {
-    accounts(pagination: PaginationInput!, id: String!): [Account!]!
-    products(pagination: PaginationInput!, query: String!, id: String!): [Product!]!
+    accounts(pagination: PaginationInput, id: String): [Account!]!
+    products(pagination: PaginationInput, query: String, id: String): [Product!]!
 }

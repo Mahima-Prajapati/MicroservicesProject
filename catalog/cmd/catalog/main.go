@@ -4,10 +4,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/Mahima-Prajapati/MicroservicesProject/account"
+	"github.com/Mahima-Prajapati/MicroservicesProject/catalog"
 	"github.com/kelseyhightower/envconfig"
-	_ "github.com/lib/pq" // Postgres driver
-
 	"github.com/tinrab/retry"
 )
 
@@ -22,9 +20,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var r account.Repository
+	var r catalog.Repository
 	retry.ForeverSleep(2*time.Second, func(_ int) (err error) {
-		r, err = account.NewPostgresRepository(cfg.DatabaseURL)
+		r, err = catalog.NewElasticRepository(cfg.DatabaseURL)
 		if err != nil {
 			log.Println(err)
 		}
@@ -34,6 +32,6 @@ func main() {
 
 	log.Println("Listening on port 8080...")
 
-	s := account.NewService(r)
-	log.Fatal(account.ListenGRPC(s, 8080))
+	s := catalog.NewService(r)
+	log.Fatal(catalog.ListenGRPC(s, 8080))
 }

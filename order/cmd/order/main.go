@@ -4,15 +4,15 @@ import (
 	"log"
 	"time"
 
-	"github.com/Mahima-Prajapati/MicroservicesProject/account"
+	"github.com/Mahima-Prajapati/MicroservicesProject/order"
 	"github.com/kelseyhightower/envconfig"
-	_ "github.com/lib/pq" // Postgres driver
-
 	"github.com/tinrab/retry"
 )
 
 type Config struct {
 	DatabaseURL string `envconfig:"DATABASE_URL"`
+	AccountURL  string `envconfig:"ACCOUNT_SERVICE_URL"`
+	CatalogURL  string `envconfig:"CATALOG_SERVICE_URL"`
 }
 
 func main() {
@@ -22,9 +22,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var r account.Repository
+	var r order.Repository
 	retry.ForeverSleep(2*time.Second, func(_ int) (err error) {
-		r, err = account.NewPostgresRepository(cfg.DatabaseURL)
+		r, err = order.NewPostgresRepository(cfg.DatabaseURL)
 		if err != nil {
 			log.Println(err)
 		}
@@ -34,6 +34,6 @@ func main() {
 
 	log.Println("Listening on port 8080...")
 
-	s := account.NewService(r)
-	log.Fatal(account.ListenGRPC(s, 8080))
+	s := order.NewService(r)
+	log.Fatal(order.ListenGRPC(s, cfg.AccountURL, cfg.CatalogURL, 8080))
 }
